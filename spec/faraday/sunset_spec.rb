@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'active_support'
 
-RSpec.describe FaradaySunset::Middleware do
+RSpec.describe Faraday::Sunset do
 
   let(:options) { {} }
   let(:app) { double(:app) }

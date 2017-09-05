@@ -11,7 +11,7 @@ Watch out for Sunset headers on HTTP responses, as they signify the deprecation 
 Add gem to Gemfile:
 
 ```ruby
-gem 'faraday_sunset'
+gem 'faraday-sunset'
 ```
 
 Enabling Sunset detection is as simple as referencing the middleware in your Faraday connection block:
@@ -45,13 +45,13 @@ bundle exec rspec
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at [philsturgeon/faraday_sunset](https://github.com/philsturgeon/faraday_sunset). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at [philsturgeon/faraday-sunset](https://github.com/philsturgeon/faraday-sunset). This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-[coveralls-image]:https://coveralls.io/repos/github/philsturgeon/faraday_sunset/badge.svg?branch=master
-[coveralls-url]:https://coveralls.io/github/philsturgeon/faraday_sunset?branch=master
+[coveralls-image]:https://coveralls.io/repos/github/philsturgeon/faraday-sunset/badge.svg?branch=master
+[coveralls-url]:https://coveralls.io/github/philsturgeon/faraday-sunset?branch=master
 
-[travis-url]:https://travis-ci.org/philsturgeon/faraday_sunset
-[travis-image]: https://travis-ci.org/philsturgeon/faraday_sunset.svg?branch=master
+[travis-url]:https://travis-ci.org/philsturgeon/faraday-sunset
+[travis-image]: https://travis-ci.org/philsturgeon/faraday-sunset.svg?branch=master
 
 [license-url]: LICENSE
 [license-image]: http://img.shields.io/badge/license-MIT-000000.svg?style=flat-square

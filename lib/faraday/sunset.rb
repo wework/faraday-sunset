@@ -1,5 +1,7 @@
-module FaradaySunset
-  class Middleware < Faraday::Middleware
+require 'faraday'
+
+module Faraday
+  class Sunset < Faraday::Middleware
     class NoOutputForWarning < StandardError; end
 
     # Initialize the middleware
@@ -7,9 +9,10 @@ module FaradaySunset
     # @param [Type] app describe app
     # @param [Hash] options = {}
     # @return void
-    def initialize(app, options = {})
+    def initialize(app, active_support: nil, logger: nil)
       super(app)
-      @options = options
+      @active_support = active_support
+      @logger = logger
     end
 
     # @param [Faraday::Env] no idea what this does
@@ -38,17 +41,17 @@ module FaradaySunset
       else
         warning = "Endpoint #{env.url} was deprecated for removal on #{datetime.iso8601} and could be removed AT ANY TIME"
       end
-      send_warning warning
+      send_warning!(warning)
     end
 
-    def send_warning(warning)
+    def send_warning!(warning)
       warned = false
-      if @options[:active_support]
+      if @active_support
         ActiveSupport::Deprecation.warn(warning)
         warned = true
       end
-      if @options[:logger] && @options[:logger].respond_to?(:warn)
-        @options[:logger].warn(warning)
+      if @logger && @logger.respond_to?(:warn)
+        @logger.warn(warning)
         warned = true
       end
       unless warned
@@ -58,4 +61,8 @@ module FaradaySunset
   end
 end
 
-Faraday::Response.register_middleware sunset: FaradaySunset::Middleware
+if Faraday.respond_to?(:register_middleware)
+  Faraday.register_middleware sunset: Faraday::Sunset
+elsif Faraday::Middleware.respond_to?(:register_middleware)
+  Faraday::Middleware.register_middleware sunset: Faraday::Sunset
+end
