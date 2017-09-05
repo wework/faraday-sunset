@@ -61,8 +61,4 @@ module Faraday
   end
 end
 
-if Faraday.respond_to?(:register_middleware)
-  Faraday.register_middleware sunset: Faraday::Sunset
-elsif Faraday::Middleware.respond_to?(:register_middleware)
-  Faraday::Middleware.register_middleware sunset: Faraday::Sunset
-end
+Faraday::Response.register_middleware sunset: Faraday::Sunset
