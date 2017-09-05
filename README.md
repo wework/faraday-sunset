@@ -13,6 +13,16 @@ Sunset is an in-development RFC for a HTTP response header, [currently v03][suns
 [sunset-draft]: https://tools.ietf.org/html/draft-wilde-sunset-header-03
 [sunset-github]: https://github.com/dret/I-D/tree/master/sunset-header
 
+The header we're sniffing for looks a little like this:
+
+```
+Sunset: Sat, 31 Dec 2018 23:59:59 GMT
+```
+
+So long as the server being called is inserting a `Sunset` header to the response with a [HTTP date], this client-side code will do stuff.
+
+[HTTP date]: https://tools.ietf.org/html/rfc7231#section-7.1.1.1
+
 ## Usage
 
 Add gem to Gemfile:
