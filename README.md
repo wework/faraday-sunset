@@ -17,14 +17,16 @@ gem 'faraday-sunset'
 Enabling Sunset detection is as simple as referencing the middleware in your Faraday connection block:
 
 ``` ruby
-connection = Faraday::Connection.new(url: '...') do |conn|
+connection = Faraday.new(url: '...') do |conn|
   conn.response :sunset, active_support: true
   # or
   conn.response :sunset, logger: Rails.logger
 end
 ```
 
-You can [configure `ActiveSupport::Deprecation`](TODO LINK TO DOCS) to warn in a few different ways, or pass in any object that acts a bit like a Rack logger, Rails logger, or anything with a `warn` method that takes a string.
+You can [configure `ActiveSupport::Deprecation`][active-support-deprecation] to warn in a few different ways, or pass in any object that acts a bit like a Rack logger, Rails logger, or anything with a `warn` method that takes a string.
+
+[active-support-deprecation]: http://api.rubyonrails.org/classes/ActiveSupport/Deprecation/Behavior.html
 
 ## Requirements
 

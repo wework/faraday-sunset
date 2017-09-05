@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = 'faraday-sunset'
-  spec.version       = '0.1.0'
+  spec.version       = '0.1.1'
   spec.summary       = 'Automatically detect deprecated HTTP endpoints'
   spec.description   = 'Faraday middleware that sniffs responses for Sunset headers'
   spec.homepage      = 'https://github.com/philsturgeon/faraday-sunset'
