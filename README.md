@@ -4,7 +4,14 @@
 [![Coverage Status][coveralls-image]][coveralls-url]
 [![MIT License][license-image]][license-url]
 
-Watch out for Sunset headers on HTTP responses, as they signify the deprecation (and eventual removal) of an endpoint.
+Watch out for [Sunset headers] on HTTP responses, as they signify the deprecation (and eventual removal) of an endpoint.
+
+Sunset is an in-development RFC for a HTTP response header, [currently v03][sunset-draft]. Check out [GitHub][sunset-github] for issues and discussion around it's development.
+
+> This specification defines the Sunset HTTP response header field, which indicates that a URI is likely to become unresponsive at a specified point in the future.
+
+[sunset-draft]: https://tools.ietf.org/html/draft-wilde-sunset-header-03
+[sunset-github]: https://github.com/dret/I-D/tree/master/sunset-header
 
 ## Usage
 
