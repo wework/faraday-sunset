@@ -47,8 +47,8 @@ You can [configure `ActiveSupport::Deprecation`][active-support-deprecation] to 
 
 ## Requirements
 
-- **Ruby:** v2.2 - v2.4
-- **Faraday:** v0.9 - v0.13
+- **Ruby:** v2.2 - v2.5
+- **Faraday:** v0.9 - v0.14
 
 ## Related Projects
 
