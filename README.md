@@ -47,12 +47,12 @@ For `logger`, You can pass in any object that acts a bit like a Rack logger, Rai
 
 You can [configure `ActiveSupport::Deprecation`][active-support-deprecation] to warn in 3 ways:
 - true:   throw warnings on sunsetted endpoints, and throw an error if active-support is missing from the project
-- 'auto': throw warnings on sunsetted endpoints, and ignore if active-support is missing from the project
+- :auto : throw warnings on sunsetted endpoints, and ignore if active-support is missing from the project
 - false: ignore active-support
 
 You can [configure `Rollbar`][rollbar] in 3 ways:
 - true:   throw warnings on sunsetted endpoints, and throw an error if Rollbar is missing from the project
-- 'auto': throw warnings on sunsetted endpoints, and ignore if Rollbar is missing from the project
+- :auto : throw warnings on sunsetted endpoints, and ignore if Rollbar is missing from the project
 - false: ignore Rollbar
 
 [active-support-deprecation]: http://api.rubyonrails.org/classes/ActiveSupport/Deprecation/Behavior.html

@@ -65,14 +65,14 @@ RSpec.describe Faraday::Sunset do
           end
         end
 
-        context 'active_support is "auto"' do
-          let(:options) { { active_support: 'auto' } }
-          it 'calls active_support when options[:active_support] is "auto"' do
+        context 'active_support is :auto' do
+          let(:options) { { active_support: :auto } }
+          it 'calls active_support when options[:active_support] is :auto' do
             expect(ActiveSupport::Deprecation).to receive(:warn).with(expected_sunset_message)
             subject.call(env)
           end
 
-          it 'throws an NoOutputForWarning when options[:active_support] is "auto" and active_support is not present' do
+          it 'throws an NoOutputForWarning when options[:active_support] is :auto and active_support is not present' do
             allow(ActiveSupport::Deprecation).to receive(:warn) { raise StandardError.new }
             expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
           end
@@ -121,14 +121,14 @@ RSpec.describe Faraday::Sunset do
           end
         end
 
-        context 'rollbar is "auto"' do
-          let(:options) { { rollbar: 'auto' } }
-          it 'calls rollbar when options[:rollbar] is "auto"' do
+        context 'rollbar is :auto' do
+          let(:options) { { rollbar: :auto } }
+          it 'calls rollbar when options[:rollbar] is :auto' do
             expect(Rollbar).to receive(:warning).with(expected_sunset_message)
             subject.call(env)
           end
 
-          it 'throws an NoOutputForWarning when options[:rollbar] is "auto" and rollbar is not present' do
+          it 'throws an NoOutputForWarning when options[:rollbar] is :auto and rollbar is not present' do
             allow(Rollbar).to receive(:warning) { raise StandardError.new }
             expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
           end
@@ -152,6 +152,39 @@ RSpec.describe Faraday::Sunset do
         end
       end
 
+      context 'multiple options enabled' do
+        shared_examples 'multiple options enabled' do
+          it 'does not throw NoOutputForWarning if at least one message is logged' do
+            allow(missing_gem).to receive(missing_method) { raise StandardError.new }
+            expect{ subject.call(env) }.not_to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
+        end
+
+        context 'active support is present, rollbar is not' do
+          let(:options) { { active_support: true, rollbar: :auto } }
+          let(:missing_gem) { Rollbar }
+          let(:missing_method) { :warning }
+
+          it_behaves_like 'multiple options enabled'
+        end
+
+        context 'rollbar is present, active support is not' do
+          let(:options) { { active_support: :auto, rollbar: true } }
+          let(:missing_gem) { ActiveSupport::Deprecation }
+          let(:missing_method) { :warn }
+
+          it_behaves_like 'multiple options enabled'
+        end
+
+        context 'multiple options set to auto, but none are present' do
+          let(:options) { { active_support: :auto, rollbar: :auto } }
+          it 'does throw NoOutputForWarning if nothing is logged' do
+            allow(Rollbar).to receive(:warning) { raise StandardError.new }
+            allow(ActiveSupport::Deprecation).to receive(:warn) { raise StandardError.new }
+            expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
+        end
+      end
     end
   end
 end

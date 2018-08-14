@@ -48,17 +48,10 @@ module Faraday
     def send_warning!(warning)
       warned = false
 
-      if @active_support == 'auto'
-        begin
-          ActiveSupport::Deprecation.warn(warning)
-          warned = true
-        rescue
-          # ignore problems when Rollbar is missing
-          # do not modify :warned
-        end
+      if @active_support == :auto
+        warned = report_active_support(warned, warning)
       elsif @active_support == true
-        ActiveSupport::Deprecation.warn(warning)
-        warned = true
+        warned = report_active_support!(warned, warning)
       end
 
       if @logger && @logger.respond_to?(:warn)
@@ -66,23 +59,51 @@ module Faraday
         warned = true
       end
 
-      if @rollbar == 'auto'
-        begin
-          Rollbar.warning(warning)
-          warned = true
-        rescue
-          # ignore problems when Rollbar is missing
-          # do not modify :warned
-        end
+      if @rollbar == :auto
+        warned = report_rollbar(warned, warning)
       elsif @rollbar == true
-        Rollbar.warning(warning)
-        warned = true
+        warned = report_rollbar!(warned, warning)
       end
 
       unless warned
-        raise NoOutputForWarning, "Pass active_support: true, or logger: ::Logger.new when registering middleware"
+        raise NoOutputForWarning, "Pass active_support: (true|false|:auto), rollbar: (true|false|:auto), or logger: ::Logger.new when registering middleware"
       end
     end
+
+    private
+
+    def report_rollbar!(warned, warning)
+      Rollbar.warning(warning)
+      # return true to set :warned
+      true
+    end
+
+    def report_active_support!(warned, warning)
+      ActiveSupport::Deprecation.warn(warning)
+      # return true to set :warned
+      true
+    end
+
+    # :auto methods
+    # do not raise errors if gems are missing
+    def report_rollbar(warned, warning)
+      begin
+        report_rollbar!(warned, warning)
+      rescue
+        # do not modify warned if an error is raised
+        warned
+      end
+    end
+
+    def report_active_support(warned, warning)
+      begin
+        report_active_support!(warned, warning)
+      rescue
+        # do not modify warned if an error is raised
+        warned
+      end
+    end
+
   end
 end
 

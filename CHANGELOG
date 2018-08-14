@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## v0.1.3 - 2018-08-14
+## v0.2.0 - 2018-08-14
 - Added rollbar as option for warnings. Can be passed true, false, 'auto'
 - Auto attempts to warn if rollbar is present, does nothing if not present
 - Added 'auto' as an option for active-support-deprecation
