@@ -47,19 +47,26 @@ module Faraday
 
     def send_warning!(warning)
       warned = false
-      if @active_support
+
+      if @active_support == 'auto'
+        begin
+          ActiveSupport::Deprecation.warn(warning)
+          warned = true
+        rescue
+          # ignore problems when Rollbar is missing
+          # do not modify :warned
+        end
+      elsif @active_support == true
         ActiveSupport::Deprecation.warn(warning)
         warned = true
       end
+
       if @logger && @logger.respond_to?(:warn)
         @logger.warn(warning)
         warned = true
       end
 
-      if @rollbar == 'on'
-        Rollbar.warning(warning)
-        warned = true
-      elsif @rollbar == 'auto'
+      if @rollbar == 'auto'
         begin
           Rollbar.warning(warning)
           warned = true
@@ -67,8 +74,9 @@ module Faraday
           # ignore problems when Rollbar is missing
           # do not modify :warned
         end
-      else
-        # Default to 'off'
+      elsif @rollbar == true
+        Rollbar.warning(warning)
+        warned = true
       end
 
       unless warned

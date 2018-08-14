@@ -51,11 +51,48 @@ RSpec.describe Faraday::Sunset do
       end
 
       context 'and active_support option is enabled' do
-        let(:options) { { active_support: true } }
+        context 'active_support is true' do
+          let(:options) { { active_support: true } }
 
-        it 'ActiveSupport::Deprecation.warn will be called' do
-          expect(ActiveSupport::Deprecation).to receive(:warn).with(expected_sunset_message)
-          subject.call(env)
+          it 'calls active_support when options[:active_support] is "on"' do
+            expect(ActiveSupport::Deprecation).to receive(:warn).with(expected_sunset_message)
+            subject.call(env)
+          end
+
+          it 'throws an error when options[:active_support] is "on" and active_support is not present"' do
+            allow(ActiveSupport::Deprecation).to receive(:warn) { raise StandardError.new }
+            expect{ subject.call(env) }.to raise_error
+          end
+        end
+
+        context 'active_support is "auto"' do
+          let(:options) { { active_support: 'auto' } }
+          it 'calls active_support when options[:active_support] is "auto"' do
+            expect(ActiveSupport::Deprecation).to receive(:warn).with(expected_sunset_message)
+            subject.call(env)
+          end
+
+          it 'throws an NoOutputForWarning when options[:active_support] is "auto" and active_support is not present' do
+            allow(ActiveSupport::Deprecation).to receive(:warn) { raise StandardError.new }
+            expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
+        end
+
+        context 'active_support is "off" or not present' do
+          let(:options) { { active_support: false } }
+          it 'does not warn when options[:active_support] is "off"' do
+            expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
+
+          it 'does not warn when options[:active_support] is not present' do
+            options = {}
+            expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
+
+          it 'does not throw an error when active_support is missing and options[:active_support] is "off"' do
+            allow(ActiveSupport::Deprecation).to receive(:warn) { raise StandardError.new }
+            expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
         end
       end
 
@@ -71,7 +108,7 @@ RSpec.describe Faraday::Sunset do
 
       context 'and rollbar option is enabled' do
         context 'rollbar is "on"' do
-          let(:options) { { rollbar: 'on' } }
+          let(:options) { { rollbar: true } }
 
           it 'calls rollbar when options[:rollbar] is "on"' do
             expect(Rollbar).to receive(:warning).with(expected_sunset_message)
@@ -98,7 +135,7 @@ RSpec.describe Faraday::Sunset do
         end
 
         context 'rollbar is "off" or not present' do
-          let(:options) { { rollbar: 'off' } }
+          let(:options) { { rollbar: false } }
           it 'does not warn when options[:rollbar] is "off"' do
             expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
           end
@@ -113,8 +150,8 @@ RSpec.describe Faraday::Sunset do
             expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
           end
         end
-
       end
+
     end
   end
 end
