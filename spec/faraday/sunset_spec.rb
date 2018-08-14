@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'active_support'
+require 'rollbar'
 
 RSpec.describe Faraday::Sunset do
 
@@ -43,6 +44,8 @@ RSpec.describe Faraday::Sunset do
 
       let(:response_headers) { { sunset: sunset_date.httpdate } }
 
+      let(:expected_sunset_message) { "Endpoint http://example.com/foo is deprecated for removal on #{sunset_date.iso8601}" }
+
       it 'raise NoOutputForWarning' do
         expect { subject.call(env) }.to raise_error(described_class::NoOutputForWarning)
       end
@@ -51,9 +54,7 @@ RSpec.describe Faraday::Sunset do
         let(:options) { { active_support: true } }
 
         it 'ActiveSupport::Deprecation.warn will be called' do
-          expect(ActiveSupport::Deprecation).to receive(:warn).with(
-            "Endpoint http://example.com/foo is deprecated for removal on #{sunset_date.iso8601}"
-          )
+          expect(ActiveSupport::Deprecation).to receive(:warn).with(expected_sunset_message)
           subject.call(env)
         end
       end
@@ -63,14 +64,57 @@ RSpec.describe Faraday::Sunset do
         let(:options) { { logger: logger } }
 
         it 'ActiveSupport::Deprecation.warn will be called' do
-          expect(logger).to receive(:warn).with(
-            "Endpoint http://example.com/foo is deprecated for removal on #{sunset_date.iso8601}"
-          )
+          expect(logger).to receive(:warn).with(expected_sunset_message)
           subject.call(env)
         end
       end
 
+      context 'and rollbar option is enabled' do
+        context 'rollbar is "on"' do
+          let(:options) { { rollbar: 'on' } }
+
+          it 'calls rollbar when options[:rollbar] is "on"' do
+            expect(Rollbar).to receive(:warning).with(expected_sunset_message)
+            subject.call(env)
+          end
+
+          it 'throws an error when options[:rollbar] is "on" and rollbar is not present"' do
+            allow(Rollbar).to receive(:warning) { raise StandardError.new }
+            expect{ subject.call(env) }.to raise_error
+          end
+        end
+
+        context 'rollbar is "auto"' do
+          let(:options) { { rollbar: 'auto' } }
+          it 'calls rollbar when options[:rollbar] is "auto"' do
+            expect(Rollbar).to receive(:warning).with(expected_sunset_message)
+            subject.call(env)
+          end
+
+          it 'throws an NoOutputForWarning when options[:rollbar] is "auto" and rollbar is not present' do
+            allow(Rollbar).to receive(:warning) { raise StandardError.new }
+            expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
+        end
+
+        context 'rollbar is "off" or not present' do
+          let(:options) { { rollbar: 'off' } }
+          it 'does not warn when options[:rollbar] is "off"' do
+            expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
+
+          it 'does not warn when options[:rollbar] is not present' do
+            options = {}
+            expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
+
+          it 'does not throw an error when rollbar is missing and options[:rollbar] is "off"' do
+            allow(Rollbar).to receive(:warning) { raise StandardError.new }
+            expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
+          end
+        end
+
+      end
     end
   end
-
 end

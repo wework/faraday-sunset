@@ -9,10 +9,11 @@ module Faraday
     # @param [Type] app describe app
     # @param [Hash] options = {}
     # @return void
-    def initialize(app, active_support: nil, logger: nil)
+    def initialize(app, active_support: nil, logger: nil, rollbar: nil)
       super(app)
       @active_support = active_support
       @logger = logger
+      @rollbar = rollbar
     end
 
     # @param [Faraday::Env] no idea what this does
@@ -54,6 +55,22 @@ module Faraday
         @logger.warn(warning)
         warned = true
       end
+
+      if @rollbar == 'on'
+        Rollbar.warning(warning)
+        warned = true
+      elsif @rollbar == 'auto'
+        begin
+          Rollbar.warning(warning)
+          warned = true
+        rescue
+          # ignore problems when Rollbar is missing
+          # do not modify :warned
+        end
+      else
+        # Default to 'off'
+      end
+
       unless warned
         raise NoOutputForWarning, "Pass active_support: true, or logger: ::Logger.new when registering middleware"
       end
