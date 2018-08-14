@@ -60,8 +60,8 @@ RSpec.describe Faraday::Sunset do
           end
 
           it 'throws an error when options[:active_support] is "on" and active_support is not present"' do
-            allow(ActiveSupport::Deprecation).to receive(:warn) { raise StandardError.new }
-            expect{ subject.call(env) }.to raise_error
+            allow(ActiveSupport::Deprecation).to receive(:warn) { raise NameError.new }
+            expect{ subject.call(env) }.to raise_error(NameError)
           end
         end
 
@@ -73,7 +73,7 @@ RSpec.describe Faraday::Sunset do
           end
 
           it 'throws an NoOutputForWarning when options[:active_support] is :auto and active_support is not present' do
-            allow(ActiveSupport::Deprecation).to receive(:warn) { raise StandardError.new }
+            allow(ActiveSupport::Deprecation).to receive(:warn) { raise NameError.new }
             expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
           end
         end
@@ -90,7 +90,7 @@ RSpec.describe Faraday::Sunset do
           end
 
           it 'does not throw an error when active_support is missing and options[:active_support] is "off"' do
-            allow(ActiveSupport::Deprecation).to receive(:warn) { raise StandardError.new }
+            allow(ActiveSupport::Deprecation).to receive(:warn) { raise NameError.new }
             expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
           end
         end
@@ -116,8 +116,8 @@ RSpec.describe Faraday::Sunset do
           end
 
           it 'throws an error when options[:rollbar] is "on" and rollbar is not present"' do
-            allow(Rollbar).to receive(:warning) { raise StandardError.new }
-            expect{ subject.call(env) }.to raise_error
+            allow(Rollbar).to receive(:warning) { raise NameError.new }
+            expect{ subject.call(env) }.to raise_error(NameError)
           end
         end
 
@@ -129,7 +129,7 @@ RSpec.describe Faraday::Sunset do
           end
 
           it 'throws an NoOutputForWarning when options[:rollbar] is :auto and rollbar is not present' do
-            allow(Rollbar).to receive(:warning) { raise StandardError.new }
+            allow(Rollbar).to receive(:warning) { raise NameError.new }
             expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
           end
         end
@@ -146,7 +146,7 @@ RSpec.describe Faraday::Sunset do
           end
 
           it 'does not throw an error when rollbar is missing and options[:rollbar] is "off"' do
-            allow(Rollbar).to receive(:warning) { raise StandardError.new }
+            allow(Rollbar).to receive(:warning) { raise NameError.new }
             expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
           end
         end
@@ -155,8 +155,8 @@ RSpec.describe Faraday::Sunset do
       context 'multiple options enabled' do
         shared_examples 'multiple options enabled' do
           it 'does not throw NoOutputForWarning if at least one message is logged' do
-            allow(missing_gem).to receive(missing_method) { raise StandardError.new }
-            expect{ subject.call(env) }.not_to raise_error(Faraday::Sunset::NoOutputForWarning)
+            allow(missing_gem).to receive(missing_method) { raise NameError.new }
+            expect{ subject.call(env) }.not_to raise_error
           end
         end
 
@@ -179,8 +179,8 @@ RSpec.describe Faraday::Sunset do
         context 'multiple options set to auto, but none are present' do
           let(:options) { { active_support: :auto, rollbar: :auto } }
           it 'does throw NoOutputForWarning if nothing is logged' do
-            allow(Rollbar).to receive(:warning) { raise StandardError.new }
-            allow(ActiveSupport::Deprecation).to receive(:warn) { raise StandardError.new }
+            allow(Rollbar).to receive(:warning) { raise NameError.new }
+            allow(ActiveSupport::Deprecation).to receive(:warn) { raise NameError.new }
             expect{ subject.call(env) }.to raise_error(Faraday::Sunset::NoOutputForWarning)
           end
         end

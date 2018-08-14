@@ -89,7 +89,7 @@ module Faraday
     def report_rollbar(warned, warning)
       begin
         report_rollbar!(warned, warning)
-      rescue
+      rescue NameError # rollbar is not present!
         # do not modify warned if an error is raised
         warned
       end
@@ -98,7 +98,7 @@ module Faraday
     def report_active_support(warned, warning)
       begin
         report_active_support!(warned, warning)
-      rescue
+      rescue NameError # active_support is not present!
         # do not modify warned if an error is raised
         warned
       end
