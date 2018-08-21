@@ -51,7 +51,7 @@ module Faraday
       if @active_support == :auto
         warned = report_active_support(warned, warning)
       elsif @active_support == true
-        warned = report_active_support!(warned, warning)
+        warned = report_active_support!(warning)
       end
 
       if @logger && @logger.respond_to?(:warn)
@@ -62,7 +62,7 @@ module Faraday
       if @rollbar == :auto
         warned = report_rollbar(warned, warning)
       elsif @rollbar == true
-        warned = report_rollbar!(warned, warning)
+        warned = report_rollbar!(warning)
       end
 
       unless warned
@@ -72,13 +72,13 @@ module Faraday
 
     private
 
-    def report_rollbar!(warned, warning)
+    def report_rollbar!(warning)
       Rollbar.warning(warning)
       # return true to set :warned
       true
     end
 
-    def report_active_support!(warned, warning)
+    def report_active_support!(warning)
       ActiveSupport::Deprecation.warn(warning)
       # return true to set :warned
       true
@@ -87,21 +87,19 @@ module Faraday
     # :auto methods
     # do not raise errors if gems are missing
     def report_rollbar(warned, warning)
-      begin
-        report_rollbar!(warned, warning)
+      report_rollbar!(warning)
+
       rescue NameError # rollbar is not present!
         # do not modify warned if an error is raised
         warned
-      end
     end
 
     def report_active_support(warned, warning)
-      begin
-        report_active_support!(warned, warning)
+      report_active_support!(warning)
+
       rescue NameError # active_support is not present!
         # do not modify warned if an error is raised
         warned
-      end
     end
 
   end
