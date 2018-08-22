@@ -40,6 +40,8 @@ connection = Faraday.new(url: '...') do |conn|
   conn.response :sunset, logger: Rails.logger
   # or
   conn.response :sunset, rollbar: true
+  # or combine:
+  conn.response :sunset, rollbar: :auto, active_support: true, logger: Rails.logger
 end
 ```
 
