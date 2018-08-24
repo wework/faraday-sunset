@@ -107,7 +107,7 @@ RSpec.describe Faraday::Sunset do
       end
 
       context 'and rollbar option is enabled' do
-        context 'rollbar is "on"' do
+        context 'rollbar is true' do
           let(:options) { { rollbar: true } }
 
           it 'calls rollbar when options[:rollbar] is true' do
