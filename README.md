@@ -38,10 +38,24 @@ connection = Faraday.new(url: '...') do |conn|
   conn.response :sunset, active_support: true
   # or
   conn.response :sunset, logger: Rails.logger
+  # or
+  conn.response :sunset, rollbar: true
+  # or combine:
+  conn.response :sunset, rollbar: :auto, active_support: true, logger: Rails.logger
 end
 ```
 
-You can [configure `ActiveSupport::Deprecation`][active-support-deprecation] to warn in a few different ways, or pass in any object that acts a bit like a Rack logger, Rails logger, or anything with a `warn` method that takes a string.
+For `logger`, You can pass in any object that acts a bit like a Rack logger, Rails logger, or anything with a `warn` method that takes a string.
+
+You can [configure `ActiveSupport::Deprecation`][active-support-deprecation] to warn in 3 ways:
+- `true` - throw warnings on sunsetted endpoints, and throw an error if active-support is missing from the project
+- `false` - ignore active-support
+- `:auto` - throw warnings on sunsetted endpoints, and ignore if active-support is missing from the project
+
+You can [configure `Rollbar`][rollbar] in 3 ways:
+- `true` - throw warnings on sunsetted endpoints, and throw an error if active-support is missing from the project
+- `false` - ignore rollbar
+- `:auto` - throw warnings on sunsetted endpoints, and ignore if Rollbar is missing from the project
 
 [active-support-deprecation]: http://api.rubyonrails.org/classes/ActiveSupport/Deprecation/Behavior.html
 

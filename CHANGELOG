@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v0.2.0 - 2018-08-14
+- Added rollbar as option for warnings. Can be passed true, false, `:auto`
+- Auto attempts to warn if rollbar is present, does nothing if not present
+- Added 'auto' as an option for active-support-deprecation
+
 ## v0.1.2 - 2017-02-20
 ### Fixed
 - Loosen faraday dependency to `< 1` to add support for v0.14

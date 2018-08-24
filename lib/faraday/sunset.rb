@@ -9,10 +9,11 @@ module Faraday
     # @param [Type] app describe app
     # @param [Hash] options = {}
     # @return void
-    def initialize(app, active_support: nil, logger: nil)
+    def initialize(app, active_support: nil, logger: nil, rollbar: nil)
       super(app)
       @active_support = active_support
       @logger = logger
+      @rollbar = rollbar
     end
 
     # @param [Faraday::Env] no idea what this does
@@ -46,18 +47,63 @@ module Faraday
 
     def send_warning!(warning)
       warned = false
-      if @active_support
-        ActiveSupport::Deprecation.warn(warning)
-        warned = true
+
+      if @active_support == :auto
+        warned = report_active_support(warned, warning)
+      elsif @active_support == true
+        warned = report_active_support!(warning)
       end
+
       if @logger && @logger.respond_to?(:warn)
         @logger.warn(warning)
         warned = true
       end
+
+      if @rollbar == :auto
+        warned = report_rollbar(warned, warning)
+      elsif @rollbar == true
+        warned = report_rollbar!(warning)
+      end
+
       unless warned
-        raise NoOutputForWarning, "Pass active_support: true, or logger: ::Logger.new when registering middleware"
+        raise NoOutputForWarning, "Pass active_support: (true|false|:auto), rollbar: (true|false|:auto), or logger: ::Logger.new when registering middleware"
       end
     end
+
+    private
+
+    def report_rollbar!(warning)
+      Rollbar.warning(warning)
+      # return true to set :warned
+      true
+    end
+
+    def report_active_support!(warning)
+      ActiveSupport::Deprecation.warn(warning)
+      # return true to set :warned
+      true
+    end
+
+    # :auto methods
+    # do not raise errors if gems are missing
+    def report_rollbar(warned, warning)
+      report_rollbar!(warning)
+
+    rescue NameError 
+      # rollbar is not present!
+      # do not modify warned if an error is raised
+      warned
+    end
+
+    def report_active_support(warned, warning)
+      report_active_support!(warning)
+
+    rescue NameError 
+      # active_support is not present!
+      # do not modify warned if an error is raised - return warned instead
+      warned
+    end
+
   end
 end
 
