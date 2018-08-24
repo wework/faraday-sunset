@@ -54,12 +54,12 @@ RSpec.describe Faraday::Sunset do
         context 'active_support is true' do
           let(:options) { { active_support: true } }
 
-          it 'calls active_support when options[:active_support] is "on"' do
+          it 'calls active_support when options[:active_support] is true' do
             expect(ActiveSupport::Deprecation).to receive(:warn).with(expected_sunset_message)
             subject.call(env)
           end
 
-          it 'throws an error when options[:active_support] is "on" and active_support is not present"' do
+          it 'throws an error when options[:active_support] is true and active_support is not present"' do
             allow(ActiveSupport::Deprecation).to receive(:warn) { raise NameError.new }
             expect{ subject.call(env) }.to raise_error(NameError)
           end
@@ -110,12 +110,12 @@ RSpec.describe Faraday::Sunset do
         context 'rollbar is "on"' do
           let(:options) { { rollbar: true } }
 
-          it 'calls rollbar when options[:rollbar] is "on"' do
+          it 'calls rollbar when options[:rollbar] is true' do
             expect(Rollbar).to receive(:warning).with(expected_sunset_message)
             subject.call(env)
           end
 
-          it 'throws an error when options[:rollbar] is "on" and rollbar is not present"' do
+          it 'throws an error when options[:rollbar] is true and rollbar is not present"' do
             allow(Rollbar).to receive(:warning) { raise NameError.new }
             expect{ subject.call(env) }.to raise_error(NameError)
           end
