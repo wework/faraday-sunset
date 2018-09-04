@@ -7,8 +7,8 @@ Gem::Specification.new do |spec|
   spec.description   = 'Faraday middleware that sniffs responses for Sunset headers'
   spec.homepage      = 'https://github.com/philsturgeon/faraday-sunset'
   spec.licenses      = ['MIT']
-  spec.authors       = ['Phil Sturgeon']
-  spec.email         = ['me@philsturgeon.uk']
+  spec.authors       = ['WeWork Engineering']
+  spec.email         = ['engineering@wework.com']
 
   spec.files         = Dir['LICENSE', 'README.md', 'lib/**/*']
   spec.require_paths = ['lib']
